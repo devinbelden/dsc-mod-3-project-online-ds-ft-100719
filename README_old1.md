@@ -26,10 +26,10 @@ conn = sqlite3.connect('Northwind_small.sqlite')
 cur = conn.cursor()
 ```
 
-## Relationship 1: Does discount amount have a statistically significant effect on the quantity of a product in an order? If so, at what level(s) of discount?
+### Relationship 1: Does discount amount have a statistically significant effect on the quantity of a product in an order? If so, at what level(s) of discount?
 
-### Null Hypothesis ($H_0$): There is no statistically significant effect of any discount level on the quantity of a product in an order.
-### Alternative Hypothesis ($H_1$): There is a statistically significant effect of discount level on quantity of a product in an order.
+#### Null Hypothesis ($H_0$): There is no statistically significant effect of any discount level on the quantity of a product in an order.
+#### Alternative Hypothesis ($H_1$): There is a statistically significant effect of discount level on quantity of a product in an order.
 
 The phrasing of the question dictates a two-tailed test, as it leaves room for a discount level to *decrease* the quantity of product in an order. There may seem to be no logical reason to order less of a product if a discount is offered, but we'll make room for this circumstance nonetheless.
 
@@ -72,67 +72,67 @@ df
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
+      <td>0</td>
       <td>0.00</td>
       <td>12</td>
       <td>11</td>
     </tr>
     <tr>
-      <th>1</th>
+      <td>1</td>
       <td>0.00</td>
       <td>10</td>
       <td>42</td>
     </tr>
     <tr>
-      <th>2</th>
+      <td>2</td>
       <td>0.00</td>
       <td>5</td>
       <td>72</td>
     </tr>
     <tr>
-      <th>3</th>
+      <td>3</td>
       <td>0.00</td>
       <td>9</td>
       <td>14</td>
     </tr>
     <tr>
-      <th>4</th>
+      <td>4</td>
       <td>0.00</td>
       <td>40</td>
       <td>51</td>
     </tr>
     <tr>
-      <th>...</th>
+      <td>...</td>
       <td>...</td>
       <td>...</td>
       <td>...</td>
     </tr>
     <tr>
-      <th>2150</th>
+      <td>2150</td>
       <td>0.25</td>
       <td>4</td>
       <td>30</td>
     </tr>
     <tr>
-      <th>2151</th>
+      <td>2151</td>
       <td>0.25</td>
       <td>20</td>
       <td>54</td>
     </tr>
     <tr>
-      <th>2152</th>
+      <td>2152</td>
       <td>0.25</td>
       <td>20</td>
       <td>6</td>
     </tr>
     <tr>
-      <th>2153</th>
+      <td>2153</td>
       <td>0.25</td>
       <td>20</td>
       <td>14</td>
     </tr>
     <tr>
-      <th>2154</th>
+      <td>2154</td>
       <td>0.25</td>
       <td>10</td>
       <td>19</td>
@@ -176,7 +176,7 @@ df.head()
 grp0 = df.groupby('discounted').get_group(0)['quantity']
 grp1 = df.groupby('discounted').get_group(1)['quantity']
 
-plt.figure(figsize=(8,5))
+plt.figure(figsize=(13,8))
 plt.bar(x='Full Price', height=grp0.mean(), yerr=stats.sem(grp0))
 
 plt.bar(x='Discounted', height=grp1.mean(), yerr=stats.sem(grp1))
@@ -414,53 +414,30 @@ model.summary()
 
 
 
+Looks like discount levels of 5%, 15%, 20%, and 25% all lead to statistically significant increases in amount of product sold in a given order. However, none of these discount levels, when compared to each other, lead to statistically significant increases. In essence, we cannot say that a customer will order more product when given a 25% discount than when given a mere 5% off. We can see this visually as well:
+
 
 ```python
-grp5 = df.groupby('discount').get_group(0.05)['quantity']
-grp15 = df.groupby('discount').get_group(0.15)['quantity']
-grp20 = df.groupby('discount').get_group(0.2)['quantity']
-grp25 = df.groupby('discount').get_group(0.25)['quantity']
-
-plt.figure(figsize=(8,5))
-plt.bar(x='5%', height=grp5.mean(), yerr=stats.sem(grp5))
-plt.bar(x='15%', height=grp15.mean(), yerr=stats.sem(grp15))
-plt.bar(x='20%', height=grp20.mean(), yerr=stats.sem(grp20))
-plt.bar(x='25%', height=grp25.mean(), yerr=stats.sem(grp25))
-
-plt.ylabel("Average Quantity per Order")
-plt.title("Comparison of Discount Levels")
+model.plot_simultaneous()
 ```
 
 
 
 
-    Text(0.5, 1.0, 'Comparison of Discount Levels')
+![png](output_17_0.png)
 
 
 
 
-![png](output_16_1.png)
-
-
-Looks like discount levels of 5%, 15%, 20%, and 25% all lead to statistically significant increases in amount of product sold in a given order. However, none of these discount levels, when compared to each other, lead to statistically significant increases, as shown in the above graph. In essence, we cannot say that a customer will order more product when given a 25% discount than when given a mere 5% off. We can see this visually as well:
-
-
-```python
-model.plot_simultaneous();
-```
-
-
-![png](output_18_0.png)
+![png](output_17_1.png)
 
 
 As seen above, the confidence intervals for our selected discount levels eclipse each others' means but not the 0% discount level, whereas the confidence interval for, say, a 10% discount level eclipses the mean of the 0% level. Thus, we can reject the null hypothesis and say that the selected discount levels provide a statistically significant increase in product quantity per order.
 
-### Conclusion: Discount levels of 5%, 15%, 20%, and 25% all result in statistically significant (p < 0.05) increases in quantity of product per order.
+### Relationship 2: Does the quantity of product sold fluctuate with the time of year? If so, when are more products being sold?
 
-## Relationship 2: Does the quantity of product sold fluctuate with the time of year? If so, when are more products being sold?
-
-### $H_0$: There is no statistically significant effect of time of year on total quantity of product sold.
-### $H_1$: Time of year has a statistically significant impact on total quantity of product sold.
+#### $H_0$: There is no statistically significant effect of time of year on total quantity of product sold.
+#### $H_1$: Time of year has a statistically significant impact on total quantity of product sold.
 
 For this test, we'll split the time of year into quarters. As usual, let's start by pulling the relevant data in an SQL query.
 
@@ -502,67 +479,67 @@ df
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
+      <td>0</td>
       <td>France</td>
       <td>2012-07-04</td>
       <td>27</td>
     </tr>
     <tr>
-      <th>1</th>
+      <td>1</td>
       <td>Germany</td>
       <td>2012-07-05</td>
       <td>49</td>
     </tr>
     <tr>
-      <th>2</th>
+      <td>2</td>
       <td>Brazil</td>
       <td>2012-07-08</td>
       <td>101</td>
     </tr>
     <tr>
-      <th>3</th>
+      <td>3</td>
       <td>Belgium</td>
       <td>2012-07-09</td>
       <td>105</td>
     </tr>
     <tr>
-      <th>4</th>
+      <td>4</td>
       <td>Brazil</td>
       <td>2012-07-10</td>
       <td>102</td>
     </tr>
     <tr>
-      <th>...</th>
+      <td>...</td>
       <td>...</td>
       <td>...</td>
       <td>...</td>
     </tr>
     <tr>
-      <th>475</th>
+      <td>475</td>
       <td>Italy</td>
       <td>2014-04-30</td>
       <td>151</td>
     </tr>
     <tr>
-      <th>476</th>
+      <td>476</td>
       <td>USA</td>
       <td>2014-05-01</td>
       <td>277</td>
     </tr>
     <tr>
-      <th>477</th>
+      <td>477</td>
       <td>Germany</td>
       <td>2014-05-04</td>
       <td>101</td>
     </tr>
     <tr>
-      <th>478</th>
+      <td>478</td>
       <td>Germany</td>
       <td>2014-05-05</td>
       <td>365</td>
     </tr>
     <tr>
-      <th>479</th>
+      <td>479</td>
       <td>Denmark</td>
       <td>2014-05-06</td>
       <td>178</td>
@@ -613,35 +590,35 @@ df.head()
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
+      <td>0</td>
       <td>France</td>
       <td>2012-07-04</td>
       <td>27</td>
       <td>3</td>
     </tr>
     <tr>
-      <th>1</th>
+      <td>1</td>
       <td>Germany</td>
       <td>2012-07-05</td>
       <td>49</td>
       <td>3</td>
     </tr>
     <tr>
-      <th>2</th>
+      <td>2</td>
       <td>Brazil</td>
       <td>2012-07-08</td>
       <td>101</td>
       <td>3</td>
     </tr>
     <tr>
-      <th>3</th>
+      <td>3</td>
       <td>Belgium</td>
       <td>2012-07-09</td>
       <td>105</td>
       <td>3</td>
     </tr>
     <tr>
-      <th>4</th>
+      <td>4</td>
       <td>Brazil</td>
       <td>2012-07-10</td>
       <td>102</td>
@@ -653,6 +630,8 @@ df.head()
 
 
 
+First, we'll test the northern hemisphere.
+
 
 ```python
 grp0 = df.groupby('quarter').get_group(1)['quantity']
@@ -660,7 +639,7 @@ grp1 = df.groupby('quarter').get_group(2)['quantity']
 grp2 = df.groupby('quarter').get_group(3)['quantity']
 grp3 = df.groupby('quarter').get_group(4)['quantity']
 
-plt.figure(figsize=(8,5))
+plt.figure(figsize=(13,8))
 plt.bar(x='Q1', height=grp0.mean(), yerr=stats.sem(grp0))
 plt.bar(x='Q2', height=grp1.mean(), yerr=stats.sem(grp1))
 plt.bar(x='Q3', height=grp2.mean(), yerr=stats.sem(grp2))
@@ -678,7 +657,7 @@ plt.ylabel("Average Quantity per Order")
 
 
 
-![png](output_25_1.png)
+![png](output_24_1.png)
 
 
 Just for fun, we'll test for normality of the distributions.
@@ -753,16 +732,21 @@ model.summary()
 
 
 ```python
-model.plot_simultaneous();
+model.plot_simultaneous()
 ```
 
 
-![png](output_32_0.png)
+
+
+![png](output_31_0.png)
+
+
+
+
+![png](output_31_1.png)
 
 
 Looks like we can confidently reject the null hypothesis and say that there is a statistically significant difference in total sales depending on the time of year.
-
-### Conclusion: There is a statistically significant (p < 0.05) difference in total sales depending on the time of year.
 
 ### Relationship 3: Is there a statistically significant difference in sales between employees throughout the company, depending on their age? If so, which employees are selling more?
 
@@ -816,7 +800,7 @@ revenue_by_birthdate
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
+      <td>0</td>
       <td>10250</td>
       <td>1969-09-19</td>
       <td>7.7</td>
@@ -824,7 +808,7 @@ revenue_by_birthdate
       <td>77.0</td>
     </tr>
     <tr>
-      <th>1</th>
+      <td>1</td>
       <td>10250</td>
       <td>1969-09-19</td>
       <td>42.4</td>
@@ -832,7 +816,7 @@ revenue_by_birthdate
       <td>1484.0</td>
     </tr>
     <tr>
-      <th>2</th>
+      <td>2</td>
       <td>10250</td>
       <td>1969-09-19</td>
       <td>16.8</td>
@@ -840,7 +824,7 @@ revenue_by_birthdate
       <td>252.0</td>
     </tr>
     <tr>
-      <th>3</th>
+      <td>3</td>
       <td>10252</td>
       <td>1969-09-19</td>
       <td>64.8</td>
@@ -848,7 +832,7 @@ revenue_by_birthdate
       <td>2592.0</td>
     </tr>
     <tr>
-      <th>4</th>
+      <td>4</td>
       <td>10252</td>
       <td>1969-09-19</td>
       <td>2.0</td>
@@ -856,7 +840,7 @@ revenue_by_birthdate
       <td>50.0</td>
     </tr>
     <tr>
-      <th>...</th>
+      <td>...</td>
       <td>...</td>
       <td>...</td>
       <td>...</td>
@@ -864,7 +848,7 @@ revenue_by_birthdate
       <td>...</td>
     </tr>
     <tr>
-      <th>2149</th>
+      <td>2149</td>
       <td>11022</td>
       <td>1998-01-27</td>
       <td>9.2</td>
@@ -872,7 +856,7 @@ revenue_by_birthdate
       <td>322.0</td>
     </tr>
     <tr>
-      <th>2150</th>
+      <td>2150</td>
       <td>11022</td>
       <td>1998-01-27</td>
       <td>36.0</td>
@@ -880,7 +864,7 @@ revenue_by_birthdate
       <td>1080.0</td>
     </tr>
     <tr>
-      <th>2151</th>
+      <td>2151</td>
       <td>11058</td>
       <td>1998-01-27</td>
       <td>10.0</td>
@@ -888,7 +872,7 @@ revenue_by_birthdate
       <td>30.0</td>
     </tr>
     <tr>
-      <th>2152</th>
+      <td>2152</td>
       <td>11058</td>
       <td>1998-01-27</td>
       <td>34.0</td>
@@ -896,7 +880,7 @@ revenue_by_birthdate
       <td>714.0</td>
     </tr>
     <tr>
-      <th>2153</th>
+      <td>2153</td>
       <td>11058</td>
       <td>1998-01-27</td>
       <td>28.5</td>
@@ -922,81 +906,39 @@ for date in revenue_by_birthdate['Birthdate'].unique():
 ```
 
 
-![png](output_38_0.png)
+![png](output_36_0.png)
 
 
 
-![png](output_38_1.png)
+![png](output_36_1.png)
 
 
 
-![png](output_38_2.png)
+![png](output_36_2.png)
 
 
 
-![png](output_38_3.png)
+![png](output_36_3.png)
 
 
 
-![png](output_38_4.png)
+![png](output_36_4.png)
 
 
 
-![png](output_38_5.png)
+![png](output_36_5.png)
 
 
 
-![png](output_38_6.png)
+![png](output_36_6.png)
 
 
 
-![png](output_38_7.png)
+![png](output_36_7.png)
 
 
 
-![png](output_38_8.png)
-
-
-Below is a graph comparing the average sales 
-
-
-```python
-grp0 = revenue_by_birthdate.groupby('Birthdate').get_group('1969-09-19')['Total Revenue by item']
-grp1 = revenue_by_birthdate.groupby('Birthdate').get_group('1980-12-08')['Total Revenue by item']
-grp2 = revenue_by_birthdate.groupby('Birthdate').get_group('1984-02-19')['Total Revenue by item']
-grp3 = revenue_by_birthdate.groupby('Birthdate').get_group('1987-03-04')['Total Revenue by item']
-grp4 = revenue_by_birthdate.groupby('Birthdate').get_group('1990-01-09')['Total Revenue by item']
-grp5 = revenue_by_birthdate.groupby('Birthdate').get_group('1992-05-29')['Total Revenue by item']
-grp6 = revenue_by_birthdate.groupby('Birthdate').get_group('1995-07-02')['Total Revenue by item']
-grp7 = revenue_by_birthdate.groupby('Birthdate').get_group('1995-08-30')['Total Revenue by item']
-grp8 = revenue_by_birthdate.groupby('Birthdate').get_group('1998-01-27')['Total Revenue by item']
-
-plt.figure(figsize=(10,3))
-plt.bar(x='1969-09-19', height=grp0.mean(), yerr=stats.sem(grp0))
-plt.bar(x='1980-12-08', height=grp1.mean(), yerr=stats.sem(grp1))
-plt.bar(x='1984-02-19', height=grp2.mean(), yerr=stats.sem(grp2))
-plt.bar(x='1987-03-04', height=grp3.mean(), yerr=stats.sem(grp3))
-plt.bar(x='1990-01-09', height=grp4.mean(), yerr=stats.sem(grp4))
-plt.bar(x='1992-05-29', height=grp5.mean(), yerr=stats.sem(grp5))
-plt.bar(x='1995-07-02', height=grp6.mean(), yerr=stats.sem(grp6))
-plt.bar(x='1995-08-30', height=grp7.mean(), yerr=stats.sem(grp7))
-plt.bar(x='1998-01-27', height=grp8.mean(), yerr=stats.sem(grp8))
-
-plt.title("Average Revenue of Each Salesperson by Birthdate")
-plt.xlabel("Birthdate")
-plt.xticks(rotation='45')
-plt.ylabel("Average Revenue Sold")
-```
-
-
-
-
-    Text(0, 0.5, 'Average Revenue Sold')
-
-
-
-
-![png](output_40_1.png)
+![png](output_36_8.png)
 
 
 Next, we'll break up the data into individual dataframes of each employee's total revenue sold. Then we'll run the non-parametric Kruskal-Wallis H-test to check for similarity between datasets.
@@ -1040,8 +982,6 @@ kruskal(a,b,c,d,e,f,g,h,i)
 
 
 A rather high P-value, which tells us we cannot confidently reject the null hypothesis.
-
-### Conclusion: An employee's birthdate has no statistically significant (p > 0.05) effect on their total revenue sold.
 
 ### Relationship 4: Is there a statistically significant difference in average discount level per order between both US and UK locations? If so, which office is giving more discounts?
 
@@ -1092,67 +1032,67 @@ discount_by_country
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
+      <td>0</td>
       <td>10248</td>
       <td>UK</td>
       <td>0.000000</td>
     </tr>
     <tr>
-      <th>1</th>
+      <td>1</td>
       <td>10249</td>
       <td>UK</td>
       <td>0.000000</td>
     </tr>
     <tr>
-      <th>2</th>
+      <td>2</td>
       <td>10250</td>
       <td>USA</td>
       <td>0.100000</td>
     </tr>
     <tr>
-      <th>3</th>
+      <td>3</td>
       <td>10251</td>
       <td>USA</td>
       <td>0.033333</td>
     </tr>
     <tr>
-      <th>4</th>
+      <td>4</td>
       <td>10252</td>
       <td>USA</td>
       <td>0.033333</td>
     </tr>
     <tr>
-      <th>...</th>
+      <td>...</td>
       <td>...</td>
       <td>...</td>
       <td>...</td>
     </tr>
     <tr>
-      <th>825</th>
+      <td>825</td>
       <td>11073</td>
       <td>USA</td>
       <td>0.000000</td>
     </tr>
     <tr>
-      <th>826</th>
+      <td>826</td>
       <td>11074</td>
       <td>UK</td>
       <td>0.050000</td>
     </tr>
     <tr>
-      <th>827</th>
+      <td>827</td>
       <td>11075</td>
       <td>USA</td>
       <td>0.150000</td>
     </tr>
     <tr>
-      <th>828</th>
+      <td>828</td>
       <td>11076</td>
       <td>USA</td>
       <td>0.250000</td>
     </tr>
     <tr>
-      <th>829</th>
+      <td>829</td>
       <td>11077</td>
       <td>USA</td>
       <td>0.027600</td>
@@ -1172,7 +1112,7 @@ grp1 = discount_by_country.groupby('country of sales rep').get_group('USA')['ave
 
 
 ```python
-plt.figure(figsize=(8,5))
+plt.figure(figsize=(13,8))
 plt.bar(x='UK', height=grp0.mean(), yerr=stats.sem(grp0))
 plt.bar(x='USA', height=grp1.mean(), yerr=stats.sem(grp1))
 plt.xlabel("Country")
@@ -1188,7 +1128,7 @@ plt.title("Average Discount Level by Country")
 
 
 
-![png](output_49_1.png)
+![png](output_44_1.png)
 
 
 It looks like there could be a statistically significant difference between the two. Let's probe further, using normality test and parametric vs. non-parametric tests to check our hypothesis.
@@ -1234,9 +1174,7 @@ stats.mannwhitneyu(grp0,grp1, alternative='two-sided')
 
 A P-value slightly too high to reject the null hypothesis. We cannot confidently say that the UK gives out more or fewer discounts than the US office. It's worth noting, especially considering the Mann-Whitney test's P-value, that specifying a two-tailed test caused us to fail to reject the null hypothesis, whereas specifying a single-tailed test would result in a P-value of 0.04, grounds for rejecting the null hypothesis.
 
-### Conclusion: There is no statistically significant (p > 0.05) difference in average discount level given between the UK and US offices.
-
-# Summary of Conclusions
+# Conclusions
 
 * Discount levels of 5%, 15%, 20%, and 25% all result in higher order volumes.
 * A discount of 5% is just as effective at moving product as a 25% discount.
